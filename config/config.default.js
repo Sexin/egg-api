@@ -16,7 +16,7 @@ module.exports = appInfo => {
 	config.keys = appInfo.name + '_1598064720774_9577';
 
 	// add your middleware config here
-	config.middleware = [];
+	config.middleware = ['errorHandler'];
 
 	// add your user config here
 	const userConfig = {
@@ -98,7 +98,7 @@ module.exports = appInfo => {
 	return {
 		...config,
 		...userConfig,
-		sessionStore,
+        sessionStore,
 		redis,
 		sequelize,
 		security,
