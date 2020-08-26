@@ -15,5 +15,21 @@ module.exports = {
     },
     sequelize: {
         package: 'egg-sequelize'
+    },
+    jwt: {
+        enable: true,
+        package: 'egg-jwt'
+    },
+    sessionRedis: {
+        enable: true,
+        package: "egg-session-redis"
+    },
+    ejs: {
+        enable: true,
+        package: 'egg-view-ejs'
+    },
+    io: {
+        enable: true,
+        package: 'egg-socket.io',
     }
 };

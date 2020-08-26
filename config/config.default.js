@@ -16,7 +16,10 @@ module.exports = appInfo => {
 	config.keys = appInfo.name + '_1598064720774_9577';
 
 	// add your middleware config here
-	config.middleware = [];
+    config.middleware = ['errorHandler', 'auth'];
+    config.auth = {
+        ignore: ['/login', '/index']
+    }
 
 	// add your user config here
 	const userConfig = {
@@ -24,6 +27,10 @@ module.exports = appInfo => {
 	};
 
 	const sessionStore = {
+        key: "EGG_SESSION",
+        maxAge: 24 * 3600 * 1000, // 1 天
+        httpOnly: true,
+        encrypt: false,
 		async get(key) {
 			const res = await app.redis.get(key);
 			if (!res) return null;
@@ -73,12 +80,45 @@ module.exports = appInfo => {
 		}
 	};
 
+	const onerror = {
+		all(err, ctx) {
+		  // 在此处定义针对所有响应类型的错误处理方法
+		  // 注意，定义了 config.all 之后，其他错误处理方法不会再生效
+		  ctx.body = 'error';
+		  ctx.status = 500;
+		},
+		html(err, ctx) {
+		  // html hander
+		  ctx.body = '<h3>error</h3>';
+		  ctx.status = 500;
+		},
+		json(err, ctx) {
+		  // json hander
+		  ctx.body = { message: 'error' };
+		  ctx.status = 500;
+		},
+		jsonp(err, ctx) {
+		  // 一般来说，不需要特殊针对 jsonp 进行错误定义，jsonp 的错误处理会自动调用 json 错误处理，并包装成 jsonp 的响应格式
+		},
+    };
+    
+    const jwt = {
+        secret: '123456'
+    }
+
 	return {
 		...config,
-		...userConfig,
-		sessionStore,
+        ...userConfig,
+        view: {
+            mapping: {
+                '.ejs': 'ejs'
+            }
+        },
+        sessionStore,
 		redis,
 		sequelize,
-		security
+		security,
+        onerror,
+        jwt
 	};
 };
