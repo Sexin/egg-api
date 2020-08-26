@@ -18,7 +18,7 @@ module.exports = appInfo => {
 	// add your middleware config here
     config.middleware = ['errorHandler', 'auth'];
     config.auth = {
-        ignore: ['/login']
+        ignore: ['/login', '/index']
     }
 
 	// add your user config here
@@ -27,6 +27,10 @@ module.exports = appInfo => {
 	};
 
 	const sessionStore = {
+        key: "EGG_SESSION",
+        maxAge: 24 * 3600 * 1000, // 1 天
+        httpOnly: true,
+        encrypt: false,
 		async get(key) {
 			const res = await app.redis.get(key);
 			if (!res) return null;
@@ -104,7 +108,12 @@ module.exports = appInfo => {
 
 	return {
 		...config,
-		...userConfig,
+        ...userConfig,
+        view: {
+            mapping: {
+                '.ejs': 'ejs'
+            }
+        },
         sessionStore,
 		redis,
 		sequelize,
