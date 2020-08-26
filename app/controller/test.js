@@ -41,7 +41,30 @@ class TestController extends Controller {
             res.status = 0;
             res.message = 'ok';
             res.body = test;
-            res.num = this.ctx.session.num;
+            res.user = ctx.authUser;
+        } catch (error) {
+            res.status = 1;
+            res.message = error;
+        }
+        ctx.body = res;
+    }
+
+    async login() {
+        const { ctx }  = this;
+        let res = {};
+        try {
+            const param = {
+                id: 1,
+                username: 123,
+                password: 111
+            }
+            const token = await ctx.getToken(param)
+            await ctx.app.redis.set('user_' + param.id, token);
+            res.status = 0;
+            res.message = 'ok';
+            res.data = {
+                token: token
+            }
         } catch (error) {
             res.status = 1;
             res.message = error;

@@ -15,5 +15,9 @@ module.exports = {
     },
     sequelize: {
         package: 'egg-sequelize'
+    },
+    jwt: {
+        enable: true,
+        package: 'egg-jwt'
     }
 };

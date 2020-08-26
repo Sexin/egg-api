@@ -16,7 +16,10 @@ module.exports = appInfo => {
 	config.keys = appInfo.name + '_1598064720774_9577';
 
 	// add your middleware config here
-	config.middleware = ['errorHandler'];
+    config.middleware = ['auth', 'errorHandler'];
+    config.auth = {
+        ignore: ['/login']
+    }
 
 	// add your user config here
 	const userConfig = {
@@ -93,7 +96,11 @@ module.exports = appInfo => {
 		jsonp(err, ctx) {
 		  // 一般来说，不需要特殊针对 jsonp 进行错误定义，jsonp 的错误处理会自动调用 json 错误处理，并包装成 jsonp 的响应格式
 		},
-	};
+    };
+    
+    const jwt = {
+        secret: '123456'
+    }
 
 	return {
 		...config,
@@ -102,6 +109,7 @@ module.exports = appInfo => {
 		redis,
 		sequelize,
 		security,
-		onerror
+        onerror,
+        jwt
 	};
 };
