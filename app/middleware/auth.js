@@ -2,34 +2,19 @@ module.exports = (options, app) => {
     return async (ctx, next) => {
         const { token } = ctx.header;
         if (!token) {
-            ctx.body = {
-                code: 403,
-                status: 1,
-                msg: '没有权限'
-            }
-            return;
+            ctx.throw('没有权限');
         }
         let user = {};
         try {
             user = await ctx.checkToken(token);
         } catch (error) {
             let fail = error.name === 'TokenExpiredError' ? 'token 已过期! 请重新获取令牌' : 'Token 令牌不合法!';
-            ctx.body = {
-                code: 403,
-                status: 1,
-                msg: fail
-            }
-            return;
+            ctx.throw(400, fail);
         }
 
         let t = await ctx.app.redis.get('user_' + user.id);
         if (!t || t !== token) {
-            ctx.body = {
-                code: 400,
-                status: 1,
-                msg: 'token 不合法'
-            }
-            return;
+            ctx.throw(400, 'token不合法')
         }
         // 4,判断用户的状态
         // user = await app.model.User.findByPk(user.id);
