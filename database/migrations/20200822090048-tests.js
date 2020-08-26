@@ -11,11 +11,6 @@ module.exports = {
     return Promise.all([
         queryInterface.addColumn(
           'tests',
-          'fullname',
-           Sequelize.STRING
-         ),
-        queryInterface.addColumn(
-          'tests',
           'age',
           Sequelize.INTEGER
         )
