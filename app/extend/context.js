@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 module.exports = {
 
     getToken(value) {
@@ -5,8 +7,11 @@ module.exports = {
     },
 
     checkToken(token) {
-        console.log(1)
-        console.log(token)
         return this.app.jwt.verify(token, this.app.config.jwt.secret);
+    },
+
+    // 加密
+    getMd5Data(data) {
+        return crypto.createHash('md5').update(data).digest('hex');
     }
 }
