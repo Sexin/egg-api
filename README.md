@@ -38,6 +38,7 @@ $ npm stop
 
 ### sequelize
 
+- cd databases
 - 升级数据库 npx sequelize db:migrate --env=${env}
 - 如果有问题需要回滚，可以通过 `db:migrate:undo` 回退一个变更
 - npx sequelize db:migrate:undo

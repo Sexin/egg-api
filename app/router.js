@@ -5,9 +5,11 @@
  */
 module.exports = app => {
   const { router, controller } = app;
-  router.get('/index', controller.home.index);
+  // 模板
+  router.get('/view/index', controller.home.index);
 
-  router.post('/savetest', controller.test.savetest);
-  router.post('/gettestlist', controller.test.gettestlist);
-  router.post('/login', controller.test.login);
+  // api
+  router.post('/api/savetest', controller.test.savetest);
+  router.post('/api/gettestlist', controller.test.gettestlist);
+  router.post('/api/login', controller.test.login);
 };

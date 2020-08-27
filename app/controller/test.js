@@ -33,6 +33,10 @@ class TestController extends Controller {
         let res = {};
         try {
             let { offset, limit} = ctx.request.body;
+            ctx.validate({
+                offset: 'number',
+                limit: 'number'
+            });
             offset = parseInt(offset);
             limit = parseInt(limit);
             const test = await ctx.service.test.list({
