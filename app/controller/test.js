@@ -1,6 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
+const VerifyPassword = require('../utils/verifypassword');
 
 class TestController extends Controller {
     async index() {
@@ -31,6 +32,7 @@ class TestController extends Controller {
     async gettestlist() {
         const { ctx } = this;
         let res = {};
+        
         try {
             let { offset, limit} = ctx.request.body;
             ctx.validate({
@@ -42,6 +44,9 @@ class TestController extends Controller {
             const test = await ctx.service.test.list({
                 offset, limit
             })
+            const vp = new VerifyPassword('admin', '123456');
+            const result = vp.checkpassword('123456');
+            res.result = result;
             res.status = 0;
             res.message = 'ok';
             res.body = test;
