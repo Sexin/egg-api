@@ -16,7 +16,7 @@ module.exports = appInfo => {
     config.keys = appInfo.name + '_1598064720774_9577';
 
     // add your middleware config here
-    config.middleware = ['errorHandler', 'auth'];
+    config.middleware = ['notfoundHandler', 'errorHandler', 'auth'];
 
     config.auth = {
         ignore: ['/api/login', '/view/index']

@@ -32,29 +32,26 @@ class TestController extends Controller {
     async gettestlist() {
         const { ctx } = this;
         let res = {};
-        
-        try {
-            let { offset, limit} = ctx.request.body;
-            ctx.validate({
-                offset: 'number',
-                limit: 'number'
-            });
-            offset = parseInt(offset);
-            limit = parseInt(limit);
-            const test = await ctx.service.test.list({
-                offset, limit
-            })
-            const vp = new VerifyPassword('admin', '123456');
-            const result = vp.checkpassword('123456');
-            res.result = result;
-            res.status = 0;
-            res.message = 'ok';
-            res.body = test;
-            res.user = ctx.authUser;
-        } catch (error) {
-            res.status = 1;
-            res.message = error;
-        }
+        let { offset, limit} = ctx.request.body;
+        ctx.validate({
+            offset: 'number',
+            limit: {
+                type: 'number',
+                required: true
+            }
+        });
+        offset = parseInt(offset);
+        // limit = parseInt(limit);
+        const test = await ctx.service.test.list({
+            offset
+        })
+        const vp = new VerifyPassword('admin', '123456');
+        const result = vp.checkpassword('123456');
+        res.result = result;
+        res.status = 0;
+        res.message = 'ok';
+        res.body = test;
+        res.user = ctx.authUser;
         ctx.body = res;
     }
 
