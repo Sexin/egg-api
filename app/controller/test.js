@@ -77,6 +77,32 @@ class TestController extends Controller {
         }
         ctx.body = res;
     }
+
+    async querylist() {
+        const { ctx } = this;
+        let res = {};
+        let { offset, limit} = ctx.request.body;
+        ctx.validate({
+            offset: 'number',
+            limit: {
+                type: 'number',
+                required: true
+            }
+        });
+        offset = parseInt(offset);
+        // limit = parseInt(limit);
+        const test = await ctx.service.test.queryList({
+            offset
+        })
+        const vp = new VerifyPassword('admin', '123456');
+        const result = vp.checkpassword('123456');
+        res.result = result;
+        res.status = 0;
+        res.message = 'ok';
+        res.body = test;
+        res.user = ctx.authUser;
+        ctx.body = res;
+    }
 }
 
 module.exports = TestController;
