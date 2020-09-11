@@ -37,6 +37,19 @@ module.exports = appInfo => {
         // validateRoot: false, // 限制被验证值必须是一个对象。
     };
 
+    config.io = {
+        namespace: {
+          '/': {
+            connectionMiddleware: ['auth'],
+            packetMiddleware: [],
+          }
+        },
+        redis: {
+            host: '127.0.0.1' ,
+            port: 6379 ,
+          },
+      };
+
     // add your user config here 
     const userConfig = {
         // myAppName: 'egg',

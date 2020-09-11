@@ -7,11 +7,20 @@ class ZhihuController extends Controller {
         const { ctx } = this;
         await ctx.render('index.ejs', 456)
     }
+    // 获取最新的列表
     async getlist() {
         const {
             ctx
         }  = this;
         const list = await ctx.service.zhihu.list();
+        this.ctx.body = list;
+    }
+
+    // 获取往期信息
+    async getbeforelist() {
+        const { ctx } = this;
+        const { date } = ctx.request.body;
+        const list = await ctx.service.zhihu.getbeforelist(date.replace(/-/g, ''))
         this.ctx.body = list;
     }
 

@@ -11,6 +11,14 @@ class Zhihu extends Service {
         return JSON.parse(list.data.toString());
     }
 
+    async getbeforelist(date) {
+        const list = await this.ctx.curl('https://news-at.zhihu.com/api/4/news/before/' + date, {
+            method: 'GET',
+            followRedirect: true
+        });
+        return JSON.parse(list.data.toString());
+    }
+
     async getarticlebody(url) {
         const body = await this.ctx.curl(url, {
             method: 'GET',
