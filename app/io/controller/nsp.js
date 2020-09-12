@@ -10,12 +10,12 @@ class NspController extends Controller {
     const client = socket.id;
 
     try {
-      const { target, payload } = message;
+      const { target, payload, usernickname } = message;
       console.log('++++++++')
-      console.log(target, payload);
+      console.log(target, payload, usernickname);
       console.log('++++++++')
       if (!target) return;
-      const msg = ctx.helper.parseMsg('exchange', payload, { client, target });
+      const msg = ctx.helper.parseMsg('exchange', payload, { client, target, usernickname });
       nsp.emit(target, msg);
     } catch (error) {
       app.logger.error(error);
