@@ -21,6 +21,15 @@ class Test extends Service {
     async create(test) {
         return await this.ctx.model.Test.create(test);
     }
+
+    // sql语句
+    async queryList({offset = 0, limit = 10}) {
+        const sql = `
+            select * from tests t limit ${limit * offset},${limit * (offset + 1)}
+        `;
+        const list = await this.app.mysql.query(sql);
+        return list;
+    }
 }
 
 module.exports = Test;
