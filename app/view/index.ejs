@@ -1,12 +1,241 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
+    <style>
+        html,
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        header {
+            width: 100%;
+            height: 65px;
+            line-height: 65px;
+            background: #4FAEE6;
+            color: #fff;
+            font-size: 20px;
+            padding-left: 50px;
+            position: fixed;
+            top: 0;
+        }
+
+        .input-box {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            height: 50px;
+            line-height: 50px;
+            padding-left: 50px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .usernickname-box,
+        .roomname-box {
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 240, 240, 0.5);
+            z-index: 1;
+            position: fixed;
+            top: 0;
+            display: none;
+        }
+
+        .usernickname-input-box,
+        .roomname-input-box {
+            width: 250px;
+            height: 50px;
+            margin: 200px auto;
+            border: 1px solid #000;
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .content-box {
+            height: calc(100% - 115px);
+            margin-top: 65px;
+        }
+    </style>
 </head>
+
 <body>
-    {% 456 %}
+    <header>
+        聊天室
+    </header>
+    <div class='content-box'>
+
+    </div>
+    <div class='input-box'>
+        <input type="text" id='text'>
+        <button onclick='user.sendMsg()'>发送</button>
+    </div>
+    <div class='usernickname-box'>
+        <div class='usernickname-input-box'>
+            <input type="text" id='usernickname' placeholder="请输入昵称">
+            <button onclick="user.setUserNickName()">确认</button>
+        </div>
+    </div>
+    <div class='roomname-box'>
+        <div class='roomname-input-box'>
+            <input type="text" id='roomname' placeholder="请输入房间名称">
+            <button onclick="user.joinroom()">确认</button>
+        </div>
+    </div>
 </body>
+<script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.1.0/axios.min.js"></script>
+<script>
+    console.log(axios)
+
+    axios.defaults.baseURL = 'https://127.0.0.1/api/';
+    axios.defaults.headers.common['token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOjEyMywicGFzc3dvcmQiOjExMSwiaWF0IjoxNTk5NTMyNDk1fQ.YBQ9H76CMI8AFu0czXEhwEhaBM1M94G-TsNqG3Llcsk';
+
+    const log = console.log;
+    let user;
+    let socket;
+
+    window.onkeydown = (event) => {
+        const e = event || window.event;
+        if (e && e.keyCode == 13) {
+            user.sendMsg();
+        }
+    }
+
+    class User {
+        getUserNickName() {
+            const usernickname = localStorage.getItem('usernickname');
+            if (!usernickname) {
+                document.querySelector('.usernickname-box').style.display = 'block';
+                return;
+            }
+            this.usernickname = usernickname;
+            document.querySelector('.roomname-box').style.display = 'block';
+        }
+
+        setUserNickName() {
+            const name = document.querySelector('#usernickname').value;
+            localStorage.setItem('usernickname', name)
+            this.usernickname = name;
+            document.querySelector('.usernickname-box').style.display = 'none';
+            document.querySelector('.roomname-box').style.display = 'block'; 
+        }
+
+        connect() {
+            socket.init();
+        }
+
+        createroom() {
+            const roomname = document.querySelector('#roomname').value;
+            axios.post('http://localhost:7001/api/nsp/createroom', {
+                roomname: roomname,
+                usernickname: this.usernickname
+            }).then(json => {
+                console.log(json);
+            })
+        }
+
+        joinroom() {
+            const roomname = document.querySelector('#roomname').value;
+            axios.post('http://localhost:7001/api/nsp/joinroom', {
+                roomname: roomname
+            }).then(json => {
+                if(json.status === 0) {
+                    this.roomname = roomname
+                    socket = new SockerIO(this.usernickname, roomname);
+                    user.connect();
+                    document.querySelector('.roomname-box').style.display = 'none'; 
+                } else {
+                    alert(json.message)
+                }
+            })
+        }
+
+        sendMsg() {
+            socket.socket.emit('exchange', {
+                target: this.roomname,
+                payload: {
+                    msg: document.querySelector('#text').value
+                },
+                usernickname: this.usernickname
+            });
+            document.querySelector('#text').value = ''
+        }
+    }
+
+    class SockerIO {
+        constructor(usernickname, roomname) {
+            this.usernickname = usernickname
+            this.roomname = roomname
+        }
+
+        init() {
+            const socket = io('http://127.0.0.1:7001/', {
+
+                // 实际使用中可以在这里传递参数
+                query: {
+                    room: this.roomname,
+                    userId: `client_${Math.random()}`,
+                    userNickName: this.usernickname
+                },
+
+                transports: ['websocket']
+            });
+
+            socket.on('connect', () => {
+                const id = socket.id;
+
+                log('#connect,', id, socket);
+
+                // 监听自身 id 以实现 p2p 通讯
+                socket.on(id, msg => {
+                    log('#receive,', msg);
+                });
+            });
+
+            // 接收在线用户信息
+            socket.on('online', msg => {
+                log('#online,', msg);
+            });
+
+            // 系统事件
+            socket.on('disconnect', msg => {
+                log('#disconnect', msg);
+            });
+
+            socket.on('disconnecting', () => {
+                log('#disconnecting');
+            });
+
+            socket.on('error', () => {
+                log('#error');
+            });
+
+            socket.on(this.roomname, msg => {
+                log(msg)
+                const str = `
+                    <span class='usernickname'>${msg.meta.usernickname}: <span>
+                    <span>${msg.data.payload.msg}</span>
+                `;
+                const dom = document.createElement('div');
+                dom.innerHTML = str;
+                document.querySelector('.content-box').appendChild(dom)
+            })
+
+            this.socket = socket;
+        }
+    }
+
+    window.onload = function () {
+        user = new User();
+        user.getUserNickName();        
+    }
+</script>
+
 </html>
