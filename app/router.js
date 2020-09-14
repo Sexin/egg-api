@@ -22,6 +22,9 @@ module.exports = app => {
     // 爬虫
     router.post('/api/spider', controller.spider.spider);
 
+    // 创建房间
+    router.post('/api/nsp/createroom', controller.nsp.createroom);
+    router.post('/api/nsp/joinroom', controller.nsp.joinroom);
     // io
     io.of('/').route('exchange', io.controller.nsp.exchange);
 };

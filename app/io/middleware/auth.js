@@ -9,10 +9,10 @@ module.exports = () => {
         const nsp = app.io.of('/');
         const query = socket.handshake.query;
         // 用户信息
-        const { room, userId } = query;
+        const { room, userId, userName } = query;
         const rooms = [room];
 
-        logger.debug('#user_info', id, room, userId);
+        logger.debug('#user_info', id, room, userId, userName);
 
         const tick = (id, msg) => {
             logger.debug('#tick', id, msg);
@@ -28,16 +28,20 @@ module.exports = () => {
 
         // 检查房间是否存在，不存在则踢出用户
         // 备注：此处 app.redis 与插件无关，可用其他存储代替
+        console.log('+++++++')
+        console.log(`${PREFIX}:${room}`)
+        console.log(await app.redis.get(`${PREFIX}:${room}`))
+        console.log('+++++++')
         const hasRoom = await app.redis.get(`${PREFIX}:${room}`);
         logger.debug('#has_exist', hasRoom);
 
-        // if (!hasRoom) {
-        //     tick(id, {
-        //         type: 'deleted',
-        //         message: 'deleted, room has been deleted.',
-        //     });
-        //     return;
-        // }
+        if (!hasRoom) {
+            tick(id, {
+                type: 'deleted',
+                message: '该房间不存在',
+            });
+            return;
+        }
 
         // 用户加入
         logger.debug('#join', room);
