@@ -7,12 +7,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <style>
-        html,
-        body {
+        html {
             padding: 0;
             margin: 0;
             width: 100%;
             height: 100%;
+        }
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: calc(100% - 65px);
         }
 
         header {
@@ -31,10 +36,13 @@
             width: 100%;
             position: fixed;
             bottom: 0;
-            height: 50px;
-            line-height: 50px;
-            padding-left: 50px;
+            height: 40px;
+            line-height: 40px;
             border-top: 1px solid #f0f0f0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
         }
 
         .usernickname-box,
@@ -59,8 +67,12 @@
         }
 
         .content-box {
-            height: calc(100% - 115px);
-            margin-top: 65px;
+            max-width: 500px;
+            height: calc(100% - 80px);
+            overflow: auto;
+            margin: 65px auto 0;
+            border-left: 1px solid #f0f0f0;
+            border-right: 1px solid #f0f0f0;
         }
     </style>
 </head>
@@ -73,7 +85,8 @@
 
     </div>
     <div class='input-box'>
-        <input type="text" id='text'>
+        <!-- <input type="textarea" id='text'> -->
+        <textarea rows='2' cols='40' id='text' style='resize: none;'></textarea>
         <button onclick='user.sendMsg()'>发送</button>
     </div>
     <div class='usernickname-box'>
@@ -94,19 +107,12 @@
 <script>
     console.log(axios)
 
-    axios.defaults.baseURL = 'https://127.0.0.1/api/';
-    axios.defaults.headers.common['token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOjEyMywicGFzc3dvcmQiOjExMSwiaWF0IjoxNTk5NTMyNDk1fQ.YBQ9H76CMI8AFu0czXEhwEhaBM1M94G-TsNqG3Llcsk';
+    axios.defaults.baseURL = 'https://47.100.200.195/api/';
+    axios.defaults.headers.common['token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOjEyMywicGFzc3dvcmQiOjExMSwiaWF0IjoxNjAwMDQ2MjU1fQ.wUfpBx1GcFgixW3qKalAC6fpC_Rghb6rm5cS_gAUSag';
 
     const log = console.log;
     let user;
     let socket;
-
-    window.onkeydown = (event) => {
-        const e = event || window.event;
-        if (e && e.keyCode == 13) {
-            user.sendMsg();
-        }
-    }
 
     class User {
         getUserNickName() {
@@ -133,7 +139,7 @@
 
         createroom() {
             const roomname = document.querySelector('#roomname').value;
-            axios.post('http://localhost:7001/api/nsp/createroom', {
+            axios.post('http://47.100.200.195:7001/api/nsp/createroom', {
                 roomname: roomname,
                 usernickname: this.usernickname
             }).then(json => {
@@ -143,7 +149,7 @@
 
         joinroom() {
             const roomname = document.querySelector('#roomname').value;
-            axios.post('http://localhost:7001/api/nsp/joinroom', {
+            axios.post('http://47.100.200.195:7001/api/nsp/joinroom', {
                 roomname: roomname
             }).then(json => {
                 if(json.status === 0) {
@@ -151,6 +157,13 @@
                     socket = new SockerIO(this.usernickname, roomname);
                     user.connect();
                     document.querySelector('.roomname-box').style.display = 'none'; 
+                    window.onkeydown = (event) => {
+                        const e = event || window.event;
+                        if (e && e.keyCode == 13) {
+                            e.preventDefault();
+                            user.sendMsg();
+                        }
+                    }
                 } else {
                     alert(json.message)
                 }
@@ -176,7 +189,7 @@
         }
 
         init() {
-            const socket = io('http://127.0.0.1:7001/', {
+            const socket = io('http://47.100.200.195:7001/', {
 
                 // 实际使用中可以在这里传递参数
                 query: {
@@ -225,7 +238,25 @@
                 `;
                 const dom = document.createElement('div');
                 dom.innerHTML = str;
-                document.querySelector('.content-box').appendChild(dom)
+                dom.style.minheight = '40px';
+                dom.style.margin = '10px 0';
+                if(msg.meta.usernickname == localStorage.getItem('usernickname')) {
+                    dom.style.textAlign = 'right';
+                    dom.style.color = 'red';
+                    dom.style.paddingLeft = '100px';
+                    dom.style.paddingRight = '10px';
+                } else {
+                    dom.style.paddingLeft = '10px';
+                    dom.style.paddingRight = '100px';
+                }
+                document.querySelector('.content-box').appendChild(dom);
+                const contetn_dom = document.querySelector('.content-box');
+                if(contetn_dom.clientHeight < contetn_dom.scrollHeight) {
+                    contetn_dom.scrollTo({
+                        top: contetn_dom.scrollTop + 50,
+                        behavior: 'smooth'
+                    })
+                }
             })
 
             this.socket = socket;
