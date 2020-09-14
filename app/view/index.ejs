@@ -79,7 +79,7 @@
 
 <body>
     <header>
-        聊天室
+        聊天室<% %>
     </header>
     <div class='content-box'>
 
@@ -107,14 +107,38 @@
 <script>
     console.log(axios)
 
-    axios.defaults.baseURL = 'https://47.100.200.195/api/';
-    axios.defaults.headers.common['token'] = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOjEyMywicGFzc3dvcmQiOjExMSwiaWF0IjoxNjAwMDQ2MjU1fQ.wUfpBx1GcFgixW3qKalAC6fpC_Rghb6rm5cS_gAUSag';
+    // axios.defaults.baseURL = 'https://47.100.200.195/api/';
+    if(localStorage.getItem('token')) {
+        axios.defaults.headers.common['token'] = localStorage.getItem('token');
+    }
 
     const log = console.log;
     let user;
     let socket;
 
+    class Axiosc {
+        init() {
+            const token = localStorage.getItem('token');
+            if(token) {
+                this.setToken(token);
+            }   
+        }
+
+        setToken(token) {
+            axios.defaults.headers.common['token'] = token;
+        }
+    }
+
     class User {
+        login() {
+            axios.post('/api/login').then(json => {
+                if(json.status === 0) {
+                    localStorage.setItem('token', json.data.token);
+                    axiosc.setToken(json.data.token);
+                }
+            })
+        }
+
         getUserNickName() {
             const usernickname = localStorage.getItem('usernickname');
             if (!usernickname) {
@@ -122,6 +146,7 @@
                 return;
             }
             this.usernickname = usernickname;
+            this.login();
             document.querySelector('.roomname-box').style.display = 'block';
         }
 
@@ -129,6 +154,7 @@
             const name = document.querySelector('#usernickname').value;
             localStorage.setItem('usernickname', name)
             this.usernickname = name;
+            this.login();
             document.querySelector('.usernickname-box').style.display = 'none';
             document.querySelector('.roomname-box').style.display = 'block'; 
         }
@@ -139,7 +165,7 @@
 
         createroom() {
             const roomname = document.querySelector('#roomname').value;
-            axios.post('http://47.100.200.195:7001/api/nsp/createroom', {
+            axios.post('/api/nsp/createroom', {
                 roomname: roomname,
                 usernickname: this.usernickname
             }).then(json => {
@@ -149,7 +175,7 @@
 
         joinroom() {
             const roomname = document.querySelector('#roomname').value;
-            axios.post('http://47.100.200.195:7001/api/nsp/joinroom', {
+            axios.post('/api/nsp/joinroom', {
                 roomname: roomname
             }).then(json => {
                 if(json.status === 0) {
@@ -189,7 +215,7 @@
         }
 
         init() {
-            const socket = io('http://47.100.200.195:7001/', {
+            const socket = io('/', {
 
                 // 实际使用中可以在这里传递参数
                 query: {
@@ -265,6 +291,8 @@
 
     window.onload = function () {
         user = new User();
+        axiosc = new Axiosc();
+        axiosc.init();
         user.getUserNickName();        
     }
 </script>
