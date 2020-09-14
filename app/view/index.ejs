@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>聊天室</title>
     <style>
         html {
             padding: 0;
@@ -13,6 +13,7 @@
             width: 100%;
             height: 100%;
         }
+
         body {
             padding: 0;
             margin: 0;
@@ -108,7 +109,7 @@
     console.log(axios)
 
     // axios.defaults.baseURL = 'https://47.100.200.195/api/';
-    if(localStorage.getItem('token')) {
+    if (localStorage.getItem('token')) {
         axios.defaults.headers.common['token'] = localStorage.getItem('token');
     }
 
@@ -119,9 +120,9 @@
     class Axiosc {
         init() {
             const token = localStorage.getItem('token');
-            if(token) {
+            if (token) {
                 this.setToken(token);
-            }   
+            }
         }
 
         setToken(token) {
@@ -132,7 +133,7 @@
     class User {
         login() {
             axios.post('/api/login').then(json => {
-                if(json.status === 0) {
+                if (json.status === 0) {
                     localStorage.setItem('token', json.data.token);
                     axiosc.setToken(json.data.token);
                 }
@@ -156,7 +157,7 @@
             this.usernickname = name;
             this.login();
             document.querySelector('.usernickname-box').style.display = 'none';
-            document.querySelector('.roomname-box').style.display = 'block'; 
+            document.querySelector('.roomname-box').style.display = 'block';
         }
 
         connect() {
@@ -178,11 +179,11 @@
             axios.post('/api/nsp/joinroom', {
                 roomname: roomname
             }).then(json => {
-                if(json.status === 0) {
+                if (json.status === 0) {
                     this.roomname = roomname
                     socket = new SockerIO(this.usernickname, roomname);
                     user.connect();
-                    document.querySelector('.roomname-box').style.display = 'none'; 
+                    document.querySelector('.roomname-box').style.display = 'none';
                     window.onkeydown = (event) => {
                         const e = event || window.event;
                         if (e && e.keyCode == 13) {
@@ -266,7 +267,7 @@
                 dom.innerHTML = str;
                 dom.style.minheight = '40px';
                 dom.style.margin = '10px 0';
-                if(msg.meta.usernickname == localStorage.getItem('usernickname')) {
+                if (msg.meta.usernickname == localStorage.getItem('usernickname')) {
                     dom.style.textAlign = 'right';
                     dom.style.color = 'red';
                     dom.style.paddingLeft = '100px';
@@ -277,7 +278,7 @@
                 }
                 document.querySelector('.content-box').appendChild(dom);
                 const contetn_dom = document.querySelector('.content-box');
-                if(contetn_dom.clientHeight < contetn_dom.scrollHeight) {
+                if (contetn_dom.clientHeight < contetn_dom.scrollHeight) {
                     contetn_dom.scrollTo({
                         top: contetn_dom.scrollTop + 50,
                         behavior: 'smooth'
@@ -293,7 +294,20 @@
         user = new User();
         axiosc = new Axiosc();
         axiosc.init();
-        user.getUserNickName();        
+        user.getUserNickName();
+        document.documentElement.addEventListener('touchstart', function (event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, false);
+        var lastTouchEnd = 0;
+        document.documentElement.addEventListener('touchend', function (event) {
+            var now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     }
 </script>
 
