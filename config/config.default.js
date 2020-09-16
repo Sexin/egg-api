@@ -29,7 +29,7 @@ module.exports = appInfo => {
     config.middleware = ['notfoundHandler', 'errorHandler', 'auth'];
 
     config.auth = {
-        ignore: ['/api/login', '/view/index']
+        ignore: ['/api/login', '/view/*']
     }
 
     config.validate = {

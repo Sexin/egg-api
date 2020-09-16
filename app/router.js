@@ -7,6 +7,7 @@ module.exports = app => {
     const { router, controller, io } = app;
     // 模板
     router.get('/view/index', controller.home.index);
+    router.get('/view/zhihuindex', controller.home.zhihuindex);
 
     // api
     router.post('/api/savetest', controller.test.savetest);

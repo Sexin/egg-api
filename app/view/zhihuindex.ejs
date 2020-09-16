@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>知乎日报</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <style>
+        html {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: calc(100% - 65px);
+        }
+        #app {
+            width: 100%;
+            height: 100%;
+        }
+
+        header {
+            width: 100%;
+            height: 65px;
+            line-height: 65px;
+            background: #4FAEE6;
+            color: #fff;
+            font-size: 20px;
+            padding-left: 50px;
+            position: fixed;
+            top: 0;
+        }
+
+        .input-box {
+            width: 100%;
+            position: fixed;
+            bottom: 0;
+            height: 40px;
+            line-height: 40px;
+            border-top: 1px solid #f0f0f0;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .usernickname-box,
+        .roomname-box {
+            width: 100%;
+            height: 100%;
+            background: rgba(240, 240, 240, 0.5);
+            z-index: 1;
+            position: fixed;
+            top: 0;
+            display: none;
+        }
+
+        .usernickname-input-box,
+        .roomname-input-box {
+            width: 250px;
+            height: 50px;
+            margin: 200px auto;
+            border: 1px solid #000;
+            border-radius: 20px;
+            padding: 20px;
+        }
+
+        .content-box {
+            max-width: 500px;
+            height: 100%;
+            overflow: auto;
+            margin: 65px auto 0;
+            border-left: 1px solid #f0f0f0;
+            border-right: 1px solid #f0f0f0;
+        }
+        @media screen and (max-width: 400px){
+            .content-box {
+                width: 100%;
+            } 
+        }
+    </style>
+</head>
+
+<body>
+    <div id='app'>
+        <header>
+            知乎日报
+           
+        </header>
+        <div class='content-box'>
+            <el-date-picker
+            v-model="date"
+            type="date"
+            placeholder="选择日期"
+            :end-placeholder='new Date()'
+            format="yyyy 年 MM 月 dd 日"
+            value-format="yyyy-MM-dd"
+            @change='getBeforeList'
+            >
+            </el-date-picker>
+            <el-table :data="tableData" style="width: 100%" height="90%">
+                <el-table-column prop="hint" label="日期">
+                    <template slot-scope="scope">
+                        <div>
+                            <el-image 
+                                style="width: 100px; height: 100px"
+                                :src="scope.row.images[0]" 
+                                :preview-src-list='[scope.row.images[0]]'
+                            >
+                            </el-image>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="hint" label="来源">
+                </el-table-column>
+                <el-table-column prop="title" label="标题">
+                </el-table-column>
+                <el-table-column label="链接" width="100">
+                    <template slot-scope="scope">
+                        <div>
+                            <el-button type='text' @click='window.open(scope.row.url)'>查看</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.1.0/axios.min.js"></script>
+<script>
+    if (localStorage.getItem('token')) {
+        axios.defaults.headers.common['token'] = localStorage.getItem('token');
+    }
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            visible: false,
+            tableData: [],
+            aaa: 123,
+            date: ''
+        },
+        methods: {
+            getList() {
+                axios.post('/api/zhihu/getlist').then(json => {
+                    this.tableData = json.stories
+                })
+            },
+            getBeforeList() {
+                axios.post('/api/zhihu/getbeforelist',{
+                    date: this.date
+                }).then(json => {
+                    this.tableData = json.stories
+                })
+            }
+        },
+        created() {
+            if(!localStorage.getItem('token')) {
+                axios.post('/api/login').then(json => {
+                    if (json.status === 0) {
+                        localStorage.setItem('token', json.data.token);
+                        this.getList();
+                    }
+                })
+            } else {
+                this.getList();
+            }
+        },
+        filters: {
+            handletime() {
+
+            }
+        }
+    })
+</script>
+
+</html>

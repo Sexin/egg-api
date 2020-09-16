@@ -7,11 +7,6 @@ class HomeController extends Controller {
     const { ctx } = this;
     await ctx.render('index.ejs', 456)
   }
-  
-  async zhihuindex() {
-    const { ctx } = this;
-    await ctx.render('zhihuindex.ejs', 456)
-  }
 }
 
 module.exports = HomeController;
