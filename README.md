@@ -40,7 +40,7 @@ $ npm stop
 - 可以通过 `db:migrate:undo:all` 回退到初始状态
 - npx sequelize db:migrate:undo:all
 - 创建或修改数据库字段npx sequelize migration:generate --name=init-users
-
+- MySQL一段时间不连接会出现断开场景，解决办法重启MySQL
 
 ### validate
 
