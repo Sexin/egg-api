@@ -169,6 +169,7 @@
                 axios.post('/api/login').then(json => {
                     if (json.status === 0) {
                         localStorage.setItem('token', json.data.token);
+                        axios.defaults.headers.common['token'] = localStorage.getItem('token');
                         this.getList();
                     }
                 })
