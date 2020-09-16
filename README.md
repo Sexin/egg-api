@@ -39,7 +39,7 @@ $ npm stop
 - npx sequelize db:migrate:undo
 - 可以通过 `db:migrate:undo:all` 回退到初始状态
 - npx sequelize db:migrate:undo:all
-- 修改数据库字段npx sequelize migration:generate --name=init-users
+- 创建或修改数据库字段npx sequelize migration:generate --name=init-users
 
 
 ### validate
