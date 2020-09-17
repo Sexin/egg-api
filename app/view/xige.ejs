@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>知乎日报</title>
+    <title>制冷百科</title>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <style>
@@ -22,6 +22,7 @@
             width: 100%;
             height: calc(100% - 65px);
         }
+
         #app {
             width: 100%;
             height: 100%;
@@ -74,17 +75,18 @@
         }
 
         .content-box {
-            max-width: 500px;
+            max-width: 1200px;
             height: 100%;
             overflow: auto;
             margin: 65px auto 0;
             border-left: 1px solid #f0f0f0;
             border-right: 1px solid #f0f0f0;
         }
-        @media screen and (max-width: 400px){
+
+        @media screen and (max-width: 400px) {
             .content-box {
                 width: 100%;
-            } 
+            }
         }
     </style>
 </head>
@@ -92,41 +94,49 @@
 <body>
     <div id='app'>
         <header>
-            知乎日报
-           
+            制冷百科
         </header>
         <div class='content-box'>
-            <el-date-picker
-            v-model="date"
-            type="date"
-            placeholder="选择日期"
-            :end-placeholder='new Date()'
-            format="yyyy 年 MM 月 dd 日"
-            value-format="yyyy-MM-dd"
-            @change='getBeforeList'
-            >
-            </el-date-picker>
             <el-table :data="tableData" style="width: 100%" height="90%">
-                <el-table-column prop="hint" label="日期">
+                <el-table-column
+                    type="index"
+                    width="50">
+                </el-table-column>
+                <el-table-column prop="hint" label="缩略图">
                     <template slot-scope="scope">
                         <div>
-                            <el-image 
-                                style="width: 100px; height: 100px"
-                                :src="scope.row.images[0]" 
-                                :preview-src-list='[scope.row.images[0]]'
-                            >
+                            <el-image style="width: 100px; height: 100px" :src="scope.row.coverimage"
+                                :preview-src-list='[scope.row.coverimage]'>
                             </el-image>
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column prop="hint" label="来源">
-                </el-table-column>
                 <el-table-column prop="title" label="标题">
+                </el-table-column>
+                <el-table-column prop="summary" label="总结">
+                </el-table-column>
+                <el-table-column prop="origin" label="来源">
+                </el-table-column>
+                <el-table-column prop="time" label="时间">
+                </el-table-column>
+                <el-table-column prop="tag" label="类型">
+                    <template slot-scope="scope">
+                        <div>
+                            <el-button type='text' @click='window.open(scope.row.tag_link)'>{{scope.row.tag}}</el-button>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column prop="tag" label="归属">
+                    <template slot-scope="scope">
+                        <div>
+                            <el-button type='text' @click='window.open(scope.row.img_mark_link)'>{{scope.row.img_mark_title}}</el-button>
+                        </div>
+                    </template>
                 </el-table-column>
                 <el-table-column label="链接" width="100">
                     <template slot-scope="scope">
                         <div>
-                            <el-button type='text' @click='window.open(scope.row.url)'>查看</el-button>
+                            <el-button type='text' @click='window.open(scope.row.link)'>查看</el-button>
                         </div>
                     </template>
                 </el-table-column>
@@ -153,12 +163,15 @@
         methods: {
             getList() {
                 axios.post('/api/spider').then(json => {
-                    this.tableData = json.stories
+                    console.log(json)
+                    if (json.status == 400) {
+                        this.login();
+                        return;
+                    }
+                    this.tableData = json
                 })
             },
-        },
-        created() {
-            if(!localStorage.getItem('token')) {
+            login() {
                 axios.post('/api/login').then(json => {
                     if (json.status === 0) {
                         localStorage.setItem('token', json.data.token);
@@ -166,6 +179,12 @@
                         this.getList();
                     }
                 })
+
+            }
+        },
+        created() {
+            if (!localStorage.getItem('token')) {
+                this.login()
             } else {
                 this.getList();
             }

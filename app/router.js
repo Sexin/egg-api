@@ -8,6 +8,7 @@ module.exports = app => {
     // 模板
     router.get('/view/index', controller.home.index);
     router.get('/view/zhihuindex', controller.home.zhihuindex);
+    router.get('/view/xige', controller.home.xige);
 
     // api
     router.post('/api/savetest', controller.test.savetest);

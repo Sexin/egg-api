@@ -22,6 +22,7 @@
             width: 100%;
             height: calc(100% - 65px);
         }
+
         #app {
             width: 100%;
             height: 100%;
@@ -81,10 +82,11 @@
             border-left: 1px solid #f0f0f0;
             border-right: 1px solid #f0f0f0;
         }
-        @media screen and (max-width: 400px){
+
+        @media screen and (max-width: 400px) {
             .content-box {
                 width: 100%;
-            } 
+            }
         }
     </style>
 </head>
@@ -93,28 +95,18 @@
     <div id='app'>
         <header>
             知乎日报
-           
+
         </header>
         <div class='content-box'>
-            <el-date-picker
-            v-model="date"
-            type="date"
-            placeholder="选择日期"
-            :end-placeholder='new Date()'
-            format="yyyy 年 MM 月 dd 日"
-            value-format="yyyy-MM-dd"
-            @change='getBeforeList'
-            >
+            <el-date-picker v-model="date" type="date" placeholder="选择日期" :end-placeholder='new Date()'
+                format="yyyy 年 MM 月 dd 日" value-format="yyyy-MM-dd" @change='getBeforeList'>
             </el-date-picker>
             <el-table :data="tableData" style="width: 100%" height="90%">
                 <el-table-column prop="hint" label="日期">
                     <template slot-scope="scope">
                         <div>
-                            <el-image 
-                                style="width: 100px; height: 100px"
-                                :src="scope.row.images[0]" 
-                                :preview-src-list='[scope.row.images[0]]'
-                            >
+                            <el-image style="width: 100px; height: 100px" :src="scope.row.images[0]"
+                                :preview-src-list='[scope.row.images[0]]'>
                             </el-image>
                         </div>
                     </template>
@@ -153,38 +145,25 @@
         methods: {
             getList() {
                 axios.post('/api/zhihu/getlist').then(json => {
-			if(json.status == 400) {
-				this.login();
-				return;
-			}
+                    if (json.status == 400) {
+                        this.login();
+                        return;
+                    }
                     this.tableData = json.stories
                 })
             },
             getBeforeList() {
-                axios.post('/api/zhihu/getbeforelist',{
+                axios.post('/api/zhihu/getbeforelist', {
                     date: this.date
                 }).then(json => {
-			if(!json.stories) {
-				this.login();
-				return;
-			} 
+                    if (!json.stories) {
+                        this.login();
+                        return;
+                    }
                     this.tableData = json.stories
                 })
             },
-		login() {
-
-			 axios.post('/api/login').then(json => {
-                    if (json.status === 0) {
-                        localStorage.setItem('token', json.data.token);
-                        axios.defaults.headers.common['token'] = localStorage.getItem('token');
-                        this.getList();
-                    }
-                })
-
-		}
-        },
-        created() {
-            if(!localStorage.getItem('token')) {
+            login() {
                 axios.post('/api/login').then(json => {
                     if (json.status === 0) {
                         localStorage.setItem('token', json.data.token);
@@ -192,6 +171,11 @@
                         this.getList();
                     }
                 })
+            }
+        },
+        created() {
+            if (!localStorage.getItem('token')) {
+                this.login()
             } else {
                 this.getList();
             }

@@ -36,24 +36,28 @@ class SpiderService extends Service {
             waitUntil: ['domcontentloaded']
         });
 
-        await page.screenshot({ path: 'static.png' });
+        // await page.screenshot({ path: 'static.png' });
         const data = await page.evaluate(() => {
             var storage = [];
             // 单页爬取
             var $li = $('#baike_container li');
             if ($li.length) {
                 $li.each(function (index, item) {
-                    storage.push({
-                        index: index + 1,
-                        coverimage: $(item).find('.am-cf .img_box .img').attr('href'),
-                        link: $(item).find('.am-cf .img_box .img img').attr('src'),
-                        title: $(item).find('.intro h3 a').text(),
-                        summary: $(item).find('.intro .abstract').text(),
-                        origin: $(item).find('.info .user-info .name').text(),
-                        time: $(item).find('.time-div .time').prop('pubtime'),
-                        tag: $(item).find('.tags-list span a').text(),
-                        tag_link: $(item).find('.tags-list span a').attr('href'),
-                    });
+                    if($(item).children('.text_ul_img').length == 0) {
+                        storage.push({
+                            index: index + 1,
+                            link: $(item).find('.am-cf .img_box .img').attr('href'),
+                            coverimage: $(item).find('.am-cf .img_box .img img').attr('src'),
+                            img_mark_link: $(item).find('.am-cf .img_box .img_mark').attr('href'),
+                            img_mark_title: $(item).find('.am-cf .img_box .img_mark').text(),
+                            title: $(item).find('.intro h3 a').text(),
+                            summary: $(item).find('.intro .abstract').text(),
+                            origin: $(item).find('.info .user-info .name').text(),
+                            time: $(item).find('.info .info-list .time-div .time').attr('pubtime'),
+                            tag: $(item).find('.tags-list span a').text(),
+                            tag_link: $(item).find('.tags-list span a').attr('href'),
+                        });
+                    }
                 });
 
             }
