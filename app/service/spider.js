@@ -30,7 +30,7 @@ class SpiderService extends Service {
         const page = await browser.newPage();
 
         // 设置客户端
-        await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
+        await page.setUserAgent('Chrome/72.0.3626.121 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36');
 
         await page.goto('https://bao.hvacr.cn/', {
             waitUntil: ['domcontentloaded']
