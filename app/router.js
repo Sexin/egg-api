@@ -29,4 +29,9 @@ module.exports = app => {
     router.post('/api/nsp/joinroom', controller.nsp.joinroom);
     // io
     io.of('/').route('exchange', io.controller.nsp.exchange);
+
+
+    // 西哥 api
+    router.post('/api/xige/refrigeration', controller.xige.refrigeration);
+    router.post('/api/xige/getlist', controller.xige.getlist);
 };

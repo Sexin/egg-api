@@ -38,7 +38,7 @@ class SpiderService extends Service {
         // 设置客户端
         await page.setUserAgent('Chrome/72.0.3626.121 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36');
 
-        await page.goto('https://bao.hvacr.cn/', {
+        await page.goto('https://bao.hvacr.cn/Tools/DatasHandler.ashx?rnd=0.776306872662071&token=0.41528412759497413&rsformat=json&funsort=getbaoindexdata&type=baike&page=1&province=%E6%B5%99%E6%B1%9F', {
             waitUntil: ['domcontentloaded']
         });
 

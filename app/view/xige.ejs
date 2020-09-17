@@ -141,6 +141,16 @@
                     </template>
                 </el-table-column>
             </el-table>
+            <div style='text-align: center;'>
+                <el-pagination
+                    layout="prev, pager, next"
+                    :total="page.total"
+                    @current-change='changepage'
+                    @prev-click='changepage'
+                    @next-click='changepage'
+                >
+                </el-pagination>
+            </div>
         </div>
     </div>
 </body>
@@ -159,17 +169,29 @@
             tableData: [],
             aaa: 123,
             date: '',
-            flag: false
+            flag: false,
+            page: {
+                current: 1,
+                total: 0,
+                pagesize: 10
+            }
         },
         methods: {
+            changepage(val) {
+                this.page.current = val;
+                this.getList();
+            },
             getList() {
-                axios.post('/api/spider').then(json => {
-                    console.log(json)
+                this.flag = true
+                axios.post('/api/xige/getlist',{
+                    page: this.page.current
+                }).then(json => {
                     if (json.status == 400) {
                         this.login();
                         return;
                     }
-                    this.tableData = json
+                    this.tableData = json.rows;
+                    this.page.total = json.count;
                     this.flag = false
                 })
             },
@@ -185,7 +207,6 @@
             }
         },
         created() {
-            this.flag = true
             if (!localStorage.getItem('token')) {
                 this.login()
             } else {
