@@ -24,7 +24,13 @@ class SpiderService extends Service {
 
     async spiderpage() {
         const browser = await puppeteer.launch({
-            headless: true, // 使用无头浏览器抓取
+            product: 'firefox',
+            extraPrefsFirefox: {
+                // Enable additional Firefox logging from its protocol implementation
+                // 'remote.log.level': 'Trace',
+            },
+            // Make browser logs visible
+            dumpio: true,
         });
 
         const page = await browser.newPage();
