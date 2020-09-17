@@ -32,7 +32,7 @@ class SpiderService extends Service {
         // 设置客户端
         await page.setUserAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36');
 
-        await page.goto('https://www.baidu.com/', {
+        await page.goto('https://bao.hvacr.cn/', {
             waitUntil: ['domcontentloaded']
         });
 
@@ -40,17 +40,20 @@ class SpiderService extends Service {
         const data = await page.evaluate(() => {
             var storage = [];
             // 单页爬取
-            var $li = $('#hotsearch-content-wrapper li');
+            var $li = $('#baike_container li');
             if ($li.length) {
                 $li.each(function (index, item) {
-                    if (index !== 0) {
-                        storage.push({
-                            index: $(item).find('.title-content-index').text(),
-                            title: $(item).find('.title-content-title').text(),
-                            link: $(item).find('a').attr('href'),
-                        });
-                    }
-
+                    storage.push({
+                        index: index + 1,
+                        coverimage: $(item).find('.am-cf .img_box .img').attr('href'),
+                        link: $(item).find('.am-cf .img_box .img img').attr('src'),
+                        title: $(item).find('.intro h3 a').text(),
+                        summary: $(item).find('.intro .abstract').text(),
+                        origin: $(item).find('.info .user-info .name').text(),
+                        time: $(item).find('.time-div .time').prop('pubtime'),
+                        tag: $(item).find('.tags-list span a').text(),
+                        tag_link: $(item).find('.tags-list span a').attr('href'),
+                    });
                 });
 
             }
