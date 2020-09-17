@@ -44,7 +44,7 @@ class XigeController extends Controller {
         }  = this;
         const { page } = ctx.request.body;
         const offset = parseInt(page);
-        const list = await ctx.service.refrigeration.list({ offset });
+        const list = await ctx.service.refrigeration.list({ offset: offset* 10, limit: 10 * (offset + 1) });
         ctx.body = list;
     }
 }
