@@ -99,8 +99,8 @@
         <div class='content-box'>
             <el-table :data="tableData" style="width: 100%" height="90%" v-loading='flag'>
                 <el-table-column
-                    type="index"
-                    width="50">
+                    prop="id"
+                    width="100">
                 </el-table-column>
                 <el-table-column prop="hint" label="缩略图">
                     <template slot-scope="scope">
@@ -145,6 +145,7 @@
                 <el-pagination
                     layout="prev, pager, next"
                     :total="page.total"
+                    :page-size='10'
                     @current-change='changepage'
                     @prev-click='changepage'
                     @next-click='changepage'
