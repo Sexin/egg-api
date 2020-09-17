@@ -2,7 +2,7 @@
 
 const Controller = require('egg').Controller;
 const cheerio = require('cheerio');
-const iconv = require('iconv-lite');
+const Op = require('sequelize').Op;
 
 class XigeController extends Controller {
     async refrigeration() {
@@ -42,9 +42,15 @@ class XigeController extends Controller {
         const {
             ctx
         }  = this;
-        const { page } = ctx.request.body;
+        const { page, keyword } = ctx.request.body;
         const offset = parseInt(page) - 1;
-        const list = await ctx.service.refrigeration.list({ offset: offset * 10, limit: 10 * (offset + 1) });
+        let where = {}
+        if(keyword) {
+            where.title = {
+                [Op.like]: '%' + keyword + '%'
+            };
+        }
+        const list = await ctx.service.refrigeration.list({ offset: offset * 10, limit: 10 * (offset + 1), where });
         ctx.body = list;
     }
 }
