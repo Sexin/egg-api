@@ -42,16 +42,22 @@ class XigeController extends Controller {
         const {
             ctx
         }  = this;
-        const { page, keyword } = ctx.request.body;
-        const offset = parseInt(page) - 1;
+        const { current, title, pageSize } = ctx.request.body;
+        const offset = parseInt(current) - 1;
         let where = {}
-        if(keyword) {
+        if(title) {
             where.title = {
-                [Op.like]: '%' + keyword + '%'
+                [Op.like]: '%' + title + '%'
             };
         }
-        const list = await ctx.service.refrigeration.list({ offset: offset * 10, limit: 10 * (offset + 1), where });
-        ctx.body = list;
+        const list = await ctx.service.refrigeration.list({ offset: offset * pageSize, limit: pageSize, where });
+        ctx.body = {
+            current: current,
+            data: list.rows,
+            pageSize,
+            total: list.count,
+            success: true
+        };
     }
 }
 
