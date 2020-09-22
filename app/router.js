@@ -34,4 +34,10 @@ module.exports = app => {
     // 西哥 api
     router.post('/api/xige/refrigeration', controller.xige.refrigeration);
     router.post('/api/xige/getlist', controller.xige.getlist);
+
+
+    // 注册
+    router.post('/api/user/register', controller.user.register);
+    router.post('/api/user/login', controller.user.login);
+
 };
