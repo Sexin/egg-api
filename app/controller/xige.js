@@ -38,6 +38,35 @@ class XigeController extends Controller {
         this.ctx.body = storage;
     }
 
+    async listguanghua() {
+        const {
+            ctx
+        }  = this;
+        const { page } = ctx.request.body;
+        const list = await ctx.service.xige.listguanghua(page);
+        let storage = [];
+        if(list) {
+            const $ = cheerio.load(list);
+            var $li = $('.cwp .c_slide .bd #itembd li .hastag a');
+            if ($li.length) {
+                $li.each(function (index, item) {
+                    storage.push({
+                        key: index + 1,
+                        link: $(item).attr('href'),
+                        coverimage: $(item).find('img').attr('src'),
+                        title: $(item).find('.titbd .tit h3').text()
+                    });
+                });
+
+            }
+        }
+        this.ctx.body = {
+            status: 0,
+            result: 0,
+            data: storage
+        };
+    }
+
     async getlist() {
         const {
             ctx

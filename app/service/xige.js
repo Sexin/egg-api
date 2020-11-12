@@ -11,6 +11,11 @@ class Xige extends Service {
         });
         return list.data;
     }
+
+    async listguanghua() {
+        const list = await this.ctx.curl('https://guangnianrensheng.net/portal.php')
+        return list.data;
+    }
 }
 
 module.exports = Xige;

@@ -23,6 +23,7 @@ module.exports = app => {
 
     // 爬虫
     router.post('/api/spider', controller.spider.spider);
+    router.post('/api/spiderguanghua', controller.xige.listguanghua);
 
     // 创建房间
     router.post('/api/nsp/createroom', controller.nsp.createroom);
@@ -39,5 +40,8 @@ module.exports = app => {
     // 注册
     router.post('/api/user/register', controller.user.register);
     router.post('/api/user/login', controller.user.login);
+
+    // 文件管理
+    router.post('/api/fsdir/readrootdir', controller.fsdir.readrootdir);
 
 };

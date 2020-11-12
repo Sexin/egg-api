@@ -65,7 +65,7 @@ class TestController extends Controller {
                 password: 111
             }
             const token = await ctx.getToken(param)
-            await ctx.app.redis.set('user_' + param.id, token);
+            await ctx.app.redis.set('user_' + param.username, token);
             res.status = 0;
             res.message = 'ok';
             res.data = {

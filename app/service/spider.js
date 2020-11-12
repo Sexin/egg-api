@@ -73,6 +73,50 @@ class SpiderService extends Service {
         await browser.close();
         return JSON.stringify(data);
     }
+
+    async spiderguanghuapage() {
+        const browser = await puppeteer.launch({
+            product: 'firefox',
+            extraPrefsFirefox: {
+                // Enable additional Firefox logging from its protocol implementation
+                // 'remote.log.level': 'Trace',
+            },
+            // Make browser logs visible
+            dumpio: true,
+        });
+
+        const page = await browser.newPage();
+
+        // 设置客户端
+        await page.setUserAgent('Chrome/72.0.3626.121 Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Safari/537.36');
+
+        await page.goto('https://guangnianrensheng.net/portal.php', {
+            waitUntil: ['domcontentloaded']
+        });
+
+        // await page.screenshot({ path: 'static.png' });
+        const data = await page.evaluate(() => {
+            var storage = [];
+            // 单页爬取
+            return $('html');
+            var $li = $('.cwp .c_slide .bd #itembd li .hastag a');
+            if ($li.length) {
+                $li.each(function (index, item) {
+                    storage.push({
+                        index: index + 1,
+                        link: $(item).attr('href'),
+                        coverimage: $(item).find('img').attr('src'),
+                        title: $(item).fint('.titbd .tit h3').text()
+                    });
+                });
+
+            }
+            return storage;
+        });
+
+        await browser.close();
+        return JSON.stringify(data);
+    }
 }
 
 module.exports = SpiderService;

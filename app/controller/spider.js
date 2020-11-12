@@ -12,6 +12,13 @@ class SpiderController extends Controller {
         const result = await ctx.service.spider.spiderpage();
         ctx.body = result;
     }
+
+    // 爬
+    async spiderguanghua() {
+        const { ctx } = this;
+        const result = await ctx.service.spider.spiderguanghuapage();
+        ctx.body = result;
+    }
 }
 
 module.exports = SpiderController;
