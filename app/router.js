@@ -4,18 +4,22 @@
  * @param {Egg.Application} app - egg application
  */
 module.exports = app => {
-    const { router, controller, io } = app;
+    const { router, controller, io, view } = app;
     // 模板
     router.get('/view/index', controller.home.index);
     router.get('/view/zhihuindex', controller.home.zhihuindex);
     router.get('/view/xige', controller.home.xige);
+    router.get('/view/email', controller.home.email);
 
     // api
     router.post('/api/savetest', controller.test.savetest);
     router.post('/api/gettestlist', controller.test.gettestlist);
     router.post('/api/querylist', controller.test.querylist);
     router.post('/api/login', controller.test.login);
-
+    router.post('/api/gethoneyedwords', controller.test.gethoneyedwords);
+    router.post('/api/setuseremaillist', controller.test.setuseremaillist);
+    router.post('/api/getuseremaillist', controller.test.getuseremaillist);
+    
     //知乎
     router.post('/api/zhihu/getlist', controller.zhihu.getlist);
     router.post('/api/zhihu/getarticlebody', controller.zhihu.getarticlebody);

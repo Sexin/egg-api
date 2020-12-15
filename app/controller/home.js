@@ -17,6 +17,11 @@ class HomeController extends Controller {
         const { ctx } = this;
         await ctx.render('xige.ejs', 456)
     }
+
+    async email() {
+        const { ctx } = this;
+        await ctx.render('email.ejs', 456)
+    }
 }
 
 module.exports = HomeController;
