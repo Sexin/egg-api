@@ -11,8 +11,7 @@ module.exports = (options, app) => {
             let fail = error.name === 'TokenExpiredError' ? 'token 已过期! 请重新获取令牌' : 'Token 令牌不合法!';
             ctx.throw(400, fail);
         }
-
-        let t = await ctx.app.redis.get('user_' + user.id);
+        let t = await ctx.app.redis.get('user_' + user.username);
         if (!t || t !== token) {
             ctx.throw(400, 'token不合法')
         }

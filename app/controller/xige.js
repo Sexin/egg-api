@@ -38,20 +38,55 @@ class XigeController extends Controller {
         this.ctx.body = storage;
     }
 
+    async listguanghua() {
+        const {
+            ctx
+        }  = this;
+        const { page } = ctx.request.body;
+        const list = await ctx.service.xige.listguanghua(page);
+        let storage = [];
+        if(list) {
+            const $ = cheerio.load(list);
+            var $li = $('.cwp .c_slide .bd #itembd li .hastag a');
+            if ($li.length) {
+                $li.each(function (index, item) {
+                    storage.push({
+                        key: index + 1,
+                        link: $(item).attr('href'),
+                        coverimage: $(item).find('img').attr('src'),
+                        title: $(item).find('.titbd .tit h3').text()
+                    });
+                });
+
+            }
+        }
+        this.ctx.body = {
+            status: 0,
+            result: 0,
+            data: storage
+        };
+    }
+
     async getlist() {
         const {
             ctx
         }  = this;
-        const { page, keyword } = ctx.request.body;
-        const offset = parseInt(page) - 1;
+        const { current, title, pageSize } = ctx.request.body;
+        const offset = parseInt(current) - 1;
         let where = {}
-        if(keyword) {
+        if(title) {
             where.title = {
-                [Op.like]: '%' + keyword + '%'
+                [Op.like]: '%' + title + '%'
             };
         }
-        const list = await ctx.service.refrigeration.list({ offset: offset * 10, limit: 10 * (offset + 1), where });
-        ctx.body = list;
+        const list = await ctx.service.refrigeration.list({ offset: offset * pageSize, limit: pageSize, where });
+        ctx.body = {
+            current: current,
+            data: list.rows,
+            pageSize,
+            total: list.count,
+            success: true
+        };
     }
 }
 

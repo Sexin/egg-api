@@ -30,6 +30,16 @@ class Test extends Service {
         const list = await this.app.mysql.query(sql);
         return list;
     }
+
+    async getHoneyedWords() {
+        const list = await this.ctx.curl('https://chp.shadiao.app/api.php')
+        return list.data;
+    }
+
+    async getDuWords() {
+        const list = await this.ctx.curl('https://du.shadiao.app/api.php')
+        return list.data;
+    }
 }
 
 module.exports = Test;
