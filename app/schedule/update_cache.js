@@ -14,13 +14,13 @@ class UpdateCache extends Subscription {
     // subscribe 是真正定时任务执行时被运行的函数
     async subscribe() {
         const data = await this.ctx.service.test.getHoneyedWords();
-        var user = "1097489781@qq.com";//自己的邮箱
-        var pass = "lrkkoxueyexziijj"; //qq邮箱授权码,如何获取授权码下面有讲
+        var user = "ceshiemail111222@163.com";//自己的邮箱
+        var pass = "CGQFQUONUGETDWXY"; //qq邮箱授权码,如何获取授权码下面有讲
         var to = '369959405@qq.com';//对方的邮箱
         let transporter = nodemailer.createTransport({
-            host: "smtp.qq.com",
-            port: 587,
-            secure: false,
+            host: "smtp.163.com",
+            port: 465,
+            secure: true,
             auth: {
                 user: user, // 用户账号
                 pass: pass, //授权码,通过QQ获取
