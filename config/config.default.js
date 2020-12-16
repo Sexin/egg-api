@@ -29,7 +29,7 @@ module.exports = appInfo => {
     config.middleware = ['notfoundHandler', 'errorHandler', 'auth'];
 
     config.auth = {
-        ignore: ['/api/login', '/view/*', '/api/user/register', '/api/user/login', '/api/spider*', '/api/gethoneyedwords', '/api/setuseremaillist', '/api/getuseremaillist']
+        ignore: ['/api/login', '/view/*', '/api/user/register', '/api/user/login', '/api/spider*', '/api/gethoneyedwords', '/api/setuseremaillist', '/api/getuseremaillist', '/api/getFile']
     }
 
     config.validate = {
@@ -39,16 +39,19 @@ module.exports = appInfo => {
 
     config.io = {
         namespace: {
-          '/': {
-            connectionMiddleware: ['auth'],
-            packetMiddleware: [],
-          }
+            '/': {
+                connectionMiddleware: ['auth'],
+                packetMiddleware: [],
+            }
         },
         redis: {
-            host: '127.0.0.1' ,
-            port: 6379 ,
-          },
-      };
+            host: '127.0.0.1',
+            port: 6379,
+        },
+    };
+    config.multipart = {
+        mode: 'file',
+    };
 
     // add your user config here 
     const userConfig = {

@@ -19,6 +19,7 @@ module.exports = app => {
     router.post('/api/gethoneyedwords', controller.test.gethoneyedwords);
     router.post('/api/setuseremaillist', controller.test.setuseremaillist);
     router.post('/api/getuseremaillist', controller.test.getuseremaillist);
+    router.post('/api/getfile', controller.test.getfile);
     
     //知乎
     router.post('/api/zhihu/getlist', controller.zhihu.getlist);

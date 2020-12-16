@@ -3,6 +3,10 @@
 const Controller = require('egg').Controller;
 const VerifyPassword = require('../utils/verifypassword');
 const nodemailer = require("nodemailer");
+const fs = require('mz/fs');
+const path = require('path');
+const { getFiles } = require('../utils/getFiles');
+const { createUUID } = require('../utils/common')
 
 class TestController extends Controller {
     async index() {
@@ -13,9 +17,9 @@ class TestController extends Controller {
     async savetest() {
         const { ctx } = this;
         let res = {};
-        
+
         try {
-            const { name, desc, fullname} = ctx.request.body;
+            const { name, desc, fullname } = ctx.request.body;
             const test = await ctx.service.test.create({
                 name, desc, fullname
             })
@@ -33,7 +37,7 @@ class TestController extends Controller {
     async gettestlist() {
         const { ctx } = this;
         let res = {};
-        let { offset, limit} = ctx.request.body;
+        let { offset, limit } = ctx.request.body;
         ctx.validate({
             offset: 'number',
             limit: {
@@ -57,7 +61,7 @@ class TestController extends Controller {
     }
 
     async login() {
-        const { ctx }  = this;
+        const { ctx } = this;
         let res = {};
         try {
             const param = {
@@ -82,7 +86,7 @@ class TestController extends Controller {
     async querylist() {
         const { ctx } = this;
         let res = {};
-        let { offset, limit} = ctx.request.body;
+        let { offset, limit } = ctx.request.body;
         ctx.validate({
             offset: 'number',
             limit: {
@@ -110,7 +114,7 @@ class TestController extends Controller {
         const { url } = ctx.request.body;
         const data = await ctx.service.test.getHoneyedWords();
         const test = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-        if(!test.exec(url)) {
+        if (!test.exec(url)) {
             ctx.throw('邮箱格式不正确');
         }
         var user = "1097489781@qq.com";//自己的邮箱
@@ -142,22 +146,22 @@ class TestController extends Controller {
         const { ctx } = this;
         const { email, type = 1 } = await ctx.request.body;
         const test = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-        if(!test.exec(email)) {
+        if (!test.exec(email)) {
             ctx.throw('邮箱格式不正确');
         }
-        if(type) {
+        if (type) {
             const adminemail = ['1097489781@qq.com']
-            if(adminemail.indexOf(email) > -1) {
+            if (adminemail.indexOf(email) > -1) {
                 ctx.throw('管理员账号不可添加');
-            } 
+            }
         }
         let useremaillist = await ctx.app.redis.get('useemaillist');
-        if(!useremaillist) {
+        if (!useremaillist) {
             useremaillist = {};
         } else {
             useremaillist = JSON.parse(useremaillist);
         }
-        if(type) {
+        if (type) {
             useremaillist[email] = email;
         } else {
             delete useremaillist[email];
@@ -174,7 +178,7 @@ class TestController extends Controller {
         const { ctx } = this;
         let useremaillist = await ctx.app.redis.get('useemaillist');
         let arr = [];
-        if(useremaillist) {
+        if (useremaillist) {
             arr = Object.keys(JSON.parse(useremaillist)).map(item => {
                 return {
                     email: item
@@ -190,6 +194,56 @@ class TestController extends Controller {
         }
     }
 
+    async getfile() {
+        const { ctx } = this;
+        const file = ctx.request.files[0];
+        const filename = path.basename(file.filename).split('.');
+        const name = createUUID() + '.' + filename[filename.length - 1];
+        let result;
+        try {
+            // 处理文件，比如上传到云端
+            getFiles(ctx, '/Users/sexin/project/data/')
+            copyFile(file.filepath, '/Users/sexin/project/data/' + name, function(err) {
+                console.log(err);
+            })
+            result = name
+        } finally {
+            // 需要删除临时文件
+            await fs.unlink(file.filepath);
+        }
+
+        ctx.body = {
+            url: result,
+            // 获取所有的字段值
+            requestBody: ctx.request.body,
+        };
+    }
+
+}
+
+function copyFile(srcPath, tarPath, cb) {
+    var rs = fs.createReadStream(srcPath)
+    rs.on('error', function (err) {
+        if (err) {
+            console.log('read error', srcPath)
+        }
+        cb && cb(err)
+    })
+
+    var ws = fs.createWriteStream(tarPath)
+    ws.on('error', function (err) {
+        if (err) {
+            console.log('write error', tarPath)
+        }
+        cb && cb(err)
+    })
+
+    ws.on('close', function (ex) {
+        cb && cb(ex)
+    })
+
+    rs.pipe(ws)
+    console.log("复制文件完成", srcPath)
 }
 
 module.exports = TestController;
