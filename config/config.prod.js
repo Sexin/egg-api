@@ -15,6 +15,19 @@ module.exports = (appInfo) => {
         username: 'root',
         password: '123456'
     };
+    config.io = {
+        namespace: {
+            '/': {
+                connectionMiddleware: ['auth'],
+                packetMiddleware: [],
+            }
+        },
+        redis: {
+            host: '127.0.0.1',
+            port: 6379,
+            auth_pass: '123456'
+        },
+    };
     return {
         ...config,
         sequelize
