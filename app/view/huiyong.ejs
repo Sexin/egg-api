@@ -39,15 +39,21 @@
             position: fixed;
             top: 0;
         }
+
         .content-box {
-            height: calc(100% - 65px);
+            height: calc(100%);
             margin-top: 65px;
+            overflow: scroll;
         }
+
         table {
-            width:  100%;
-            height: 100%;
-            overflow: auto;
+            width: 100%;
         }
+
+        table tr td{
+            padding: 20px 0;
+        }
+
         .avatar-uploader {
             float: left;
         }
@@ -58,18 +64,14 @@
     <div id='app'>
         <header>
             表格
-            <el-upload
-                class="avatar-uploader"
-                action="/api/huiyong"
-                :show-file-list="false"
-                :on-success="handleAvatarSuccess"
-            >
+            <el-upload class="avatar-uploader" action="/api/huiyong" :show-file-list="false"
+                :on-success="handleAvatarSuccess">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
         </header>
-        <div class='content-box'>
-            <table>
+        <div class='content-box' id='content'>
+            <table id='table'>
                 <tbody v-html='list'>
 
                 </tbody>
@@ -85,11 +87,13 @@
     if (localStorage.getItem('token')) {
         axios.defaults.headers.common['token'] = localStorage.getItem('token');
     }
+
     const vue = new Vue({
         el: '#app',
         data: {
             imageUrl: '',
-            list: ''
+            list: '',
+            st: 0
         },
         methods: {
             handleAvatarSuccess(res) {
@@ -102,11 +106,40 @@
                     })
                     this.list += '</tr>';
                 })
+                const el = document.getElementById('content');
+                this.fnScroll(el)
+                el.onmouseover = (e) => {
+                    clearTimeout(this.st);
+                }
+                el.onmouseout = (e) => {
+                    this.fnScroll(el)
+                }
             },
+            fnScroll(el) {
+                clearTimeout(this.st);
+                this.st = setTimeout(() => {
+                    el.scrollTo({"behavior": "smooth", "top": el.scrollTop + 1});
+                    if(el.scrollTop + el.clientHeight == el.scrollHeight) {
+                        el.scrollTo({"behavior": "smooth", "top": 0});
+                        this.fnScrollTop(el);
+                        return;
+                    }
+                    this.fnScroll(el);
+                }, 50);
+            },
+            fnScrollTop(el) {
+                el.scrollTo({"behavior": "smooth", "top": 0});
+                clearTimeout(this.st);
+                this.st = setTimeout(() => {
+                    this.fnScroll(el)
+                }, 1000)
+            }
         },
         created() {
+            
         }
     })
+
 </script>
 
 </html>
