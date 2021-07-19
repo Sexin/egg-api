@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;" name="viewport" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>表格</title>
+    <!-- 引入样式 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/theme-chalk/index.css" rel="stylesheet">
+    <style>
+        html {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            height: calc(100% - 65px);
+        }
+
+        #app {
+            width: 100%;
+            height: 100%;
+        }
+
+        header {
+            width: 100%;
+            height: 65px;
+            line-height: 65px;
+            background: #4FAEE6;
+            color: #fff;
+            font-size: 20px;
+            padding-left: 50px;
+            position: fixed;
+            top: 0;
+        }
+        .content-box {
+            height: calc(100% - 65px);
+            margin-top: 65px;
+        }
+        table {
+            width:  100%;
+            height: 100%;
+            overflow: auto;
+        }
+        .avatar-uploader {
+            float: left;
+        }
+    </style>
+</head>
+
+<body>
+    <div id='app'>
+        <header>
+            表格
+            <el-upload
+                class="avatar-uploader"
+                action="/api/huiyong"
+                :show-file-list="false"
+                :on-success="handleAvatarSuccess"
+            >
+                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+        </header>
+        <div class='content-box'>
+            <table>
+                <tbody v-html='list'>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/element-ui/2.15.3/index.min.js"></script>
+<script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.1.0/axios.min.js"></script>
+<script>
+    if (localStorage.getItem('token')) {
+        axios.defaults.headers.common['token'] = localStorage.getItem('token');
+    }
+    const vue = new Vue({
+        el: '#app',
+        data: {
+            imageUrl: '',
+            list: ''
+        },
+        methods: {
+            handleAvatarSuccess(res) {
+                const data = res.file[0].data;
+                this.list = '';
+                data.forEach(item => {
+                    this.list += '<tr>';
+                    item.forEach(item1 => {
+                        this.list += '<td>' + item1 + '</td>';
+                    })
+                    this.list += '</tr>';
+                })
+            },
+        },
+        created() {
+        }
+    })
+</script>
+
+</html>

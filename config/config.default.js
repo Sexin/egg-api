@@ -29,7 +29,10 @@ module.exports = appInfo => {
     config.middleware = ['notfoundHandler', 'errorHandler', 'auth'];
 
     config.auth = {
-        ignore: ['/api/login', '/view/*', '/api/user/register', '/api/user/login', '/api/spider*', '/api/gethoneyedwords', '/api/setuseremaillist', '/api/getuseremaillist', '/api/getFile']
+        ignore: ['/api/login', '/view/*', '/api/user/register', '/api/user/login', 
+                    '/api/spider*', '/api/gethoneyedwords', '/api/setuseremaillist', 
+                    '/api/getuseremaillist', '/api/getFile', '/api/huiyong'
+        ]
     }
 
     config.validate = {
@@ -51,6 +54,7 @@ module.exports = appInfo => {
     };
     config.multipart = {
         mode: 'file',
+        whitelist: [ '.png', '.xls', '.xlsx' ],
     };
 
     // add your user config here 

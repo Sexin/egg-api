@@ -6,7 +6,8 @@ const nodemailer = require("nodemailer");
 const fs = require('mz/fs');
 const path = require('path');
 const { getFiles } = require('../utils/getFiles');
-const { createUUID } = require('../utils/common')
+const { createUUID } = require('../utils/common');
+const xlsx = require('node-xlsx');
 
 class TestController extends Controller {
     async index() {
@@ -216,6 +217,24 @@ class TestController extends Controller {
             url: result,
             // 获取所有的字段值
             requestBody: ctx.request.body,
+        };
+    }
+
+    async huiyong() {
+        const { ctx } = this;
+        const file = ctx.request.files[0];
+        const filename = path.basename(file.filename).split('.');
+        const name = createUUID() + '.' + filename[filename.length - 1];
+        var list;
+        try {
+            list = xlsx.parse(file.filepath);
+        } finally {
+            // 需要删除临时文件
+            await fs.unlink(file.filepath);
+        }
+        ctx.body = {
+            status: 0,
+            file: list
         };
     }
 

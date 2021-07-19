@@ -22,6 +22,11 @@ class HomeController extends Controller {
         const { ctx } = this;
         await ctx.render('email.ejs', 456)
     }
+
+    async huiyong() {
+        const { ctx } = this;
+        await ctx.render('huiyong.ejs', 456)
+    }
 }
 
 module.exports = HomeController;

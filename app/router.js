@@ -10,6 +10,7 @@ module.exports = app => {
     router.get('/view/zhihuindex', controller.home.zhihuindex);
     router.get('/view/xige', controller.home.xige);
     router.get('/view/email', controller.home.email);
+    router.get('/view/huiyong', controller.home.huiyong);
 
     // api
     router.post('/api/savetest', controller.test.savetest);
@@ -20,6 +21,7 @@ module.exports = app => {
     router.post('/api/setuseremaillist', controller.test.setuseremaillist);
     router.post('/api/getuseremaillist', controller.test.getuseremaillist);
     router.post('/api/getfile', controller.test.getfile);
+    router.post('/api/huiyong', controller.test.huiyong);
     
     //知乎
     router.post('/api/zhihu/getlist', controller.zhihu.getlist);
