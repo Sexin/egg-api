@@ -8,6 +8,10 @@
     <title>人脸变老</title>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://cdn.bootcdn.net/ajax/libs/vConsole/3.9.1/vconsole.min.js"></script>
+    <script>
+        const vconsle = new VConsole();
+    </script>
     <style>
         html {
             padding: 0;
@@ -44,10 +48,14 @@
 
 <body>
     <div id='app'>
-        <input type="file" id="file">
+        <input type="file" id="file" accept='image/*'>
         <button @click='getMyOldFace'>提交</button>
         <p v-if='loading'>加载中……</p>
-        <img :src="img_path" alt="" srcset="" v-else v-loading='loading'/>
+	<el-image
+    		style="width: 200px; height: 200px"
+    		:src="img_path"
+    		:preview-src-list="[img_path]" v-loading='loading'>
+  	</el-image>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
