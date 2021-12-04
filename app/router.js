@@ -11,6 +11,7 @@ module.exports = app => {
     router.get('/view/xige', controller.home.xige);
     router.get('/view/email', controller.home.email);
     router.get('/view/huiyong', controller.home.huiyong);
+    router.get('/view/changeface', controller.home.changeface);
 
     // api
     router.post('/api/savetest', controller.test.savetest);
@@ -50,5 +51,8 @@ module.exports = app => {
 
     // 文件管理
     router.post('/api/fsdir/readrootdir', controller.fsdir.readrootdir);
+
+    // 人脸变老
+    router.post('/api/changeface/getmyoldface', controller.changeface.getMyOldFace);
 
 };

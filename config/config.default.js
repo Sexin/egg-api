@@ -31,7 +31,7 @@ module.exports = appInfo => {
     config.auth = {
         ignore: ['/api/login', '/view/*', '/api/user/register', '/api/user/login', 
                     '/api/spider*', '/api/gethoneyedwords', '/api/setuseremaillist', 
-                    '/api/getuseremaillist', '/api/getFile', '/api/huiyong'
+                    '/api/getuseremaillist', '/api/getFile', '/api/huiyong', '/api/changeface/getMyOldFace'
         ]
     }
 
