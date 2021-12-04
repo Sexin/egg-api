@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>知乎日报</title>
+    <title>人脸变老</title>
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <style>
@@ -46,7 +46,8 @@
     <div id='app'>
         <input type="file" id="file">
         <button @click='getMyOldFace'>提交</button>
-        <img :src="img_path" alt="" srcset="">
+        <p v-if='loading'>加载中……</p>
+        <img :src="img_path" alt="" srcset="" v-else v-loading='loading'/>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
@@ -57,20 +58,70 @@
     const vue = new Vue({
         el: '#app',
         data: {
-            img_path: ''
+            img_path: '',
+            loading: false
         },
         methods: {
             getMyOldFace(data) {
                 const that = this;
                 const file = document.getElementById('file').files[0];
-                var reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = function (e) { 
+                this.loading = true
+                this.img_path = '';
+                this.photoCompress(file, {
+                    quality: 0.5
+                }, function(base64) {
                     axios.post('/api/changeface/getmyoldface', {
-                        imgData: this.result
+                        imgData: base64
                     }).then(json => {
                         that.img_path = json.data
+                        that.loading = false
                     })
+                })
+            },
+
+            photoCompress(file, w, objDiv){
+                const that = this;
+                var ready = new FileReader();
+                /*开始读取指定的Blob对象或File对象中的内容. 当读取操作完成时,readyState属性的值会成为DONE,如果设置了onloadend事件处理程序,则调用之.同时,result属性中将包含一个data: URL格式的字符串以表示所读取文件的内容.*/
+                ready.readAsDataURL(file);
+                ready.onload = function() {
+                    var re = this.result;
+                    that.canvasDataURL(re,w,objDiv)
+                }
+            },
+
+            // 上传图片到服务器
+            canvasDataURL(path, obj, callback){
+                var img = new Image();
+                img.src = path;
+                img.onload = function(){
+                    var that = this;
+                    // 默认按比例压缩
+                    var w = that.width,
+                        h = that.height,
+                        scale = w / h;
+                    w = obj.width || w;
+                    h = obj.height || (w / scale);
+                    var quality = 0.7;  // 默认图片质量为0.7
+                    //生成canvas
+                    var canvas = document.createElement('canvas');
+                    var ctx = canvas.getContext('2d');
+                    // 创建属性节点
+                    var anw = document.createAttribute("width");
+                    anw.nodeValue = w;
+                    var anh = document.createAttribute("height");
+                    anh.nodeValue = h;
+                    canvas.setAttributeNode(anw);
+                    canvas.setAttributeNode(anh);
+                    ctx.drawImage(that, 0, 0, w, h);
+                    // 图像质量
+                    if(obj.quality && obj.quality <= 1 && obj.quality > 0){
+                        quality = obj.quality;
+                    }
+                    // quality值越小，所绘制出的图像越模糊
+                    var base64 = canvas.toDataURL('image/jpeg', quality);
+                    // 回调函数返回base64的值
+                    callback(base64);
                 }
             }
         },
