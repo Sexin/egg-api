@@ -48,21 +48,59 @@
 
 <body>
     <div id='app'>
-        <input type="file" id="file" accept='image/*'>
-        <button @click='getMyOldFace'>提交</button>
-        <p v-if='loading'>加载中……</p>
-	<el-image
-    		style="width: 200px; height: 200px"
-    		:src="img_path"
-    		:preview-src-list="[img_path]" v-loading='loading'>
-  	</el-image>
+        <video id="video" width="480" height="320" controls>
+        </video>
+        <div>
+            <button id="capture">拍照</button><button @click='getMyOldFace'>开始转换</button>
+        </div>
+        <canvas id="canvas" width="480" height="320" v-show='false'></canvas>
+        <el-image
+            style="width: 200px; height: 200px"
+            :src="img_path"
+            :preview-src-list="[img_path]" v-loading='loading'>
+        </el-image>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
-<script src="https://cdn.bootcss.com/socket.io/2.1.0/socket.io.js"></script>
 <script src="https://cdn.bootcdn.net/ajax/libs/axios/0.1.0/axios.min.js"></script>
 <script>
+    //访问用户媒体设备的兼容方法
+    function getUserMedia(constraints, success, error) {
+        if (navigator.mediaDevices.getUserMedia) {
+            //最新的标准API
+            navigator.mediaDevices.getUserMedia(constraints).then(success).catch(error);
+        } else if (navigator.webkitGetUserMedia) {
+            //webkit核心浏览器
+            navigator.webkitGetUserMedia(constraints, success, error)
+        } else if (navigator.mozGetUserMedia) {
+            //firfox浏览器
+            navigator.mozGetUserMedia(constraints, success, error);
+        } else if (navigator.getUserMedia) {
+            //旧版API
+            navigator.getUserMedia(constraints, success, error);
+        }
+    }
+
+    let video = document.getElementById('video');
+    let canvas = document.getElementById('canvas');
+    let context = canvas.getContext('2d');
+
+    function success(stream) {
+        //兼容webkit核心浏览器
+        let CompatibleURL = window.URL || window.webkitURL;
+        //将视频流设置为video元素的源
+        console.log(stream);
+
+        //video.src = CompatibleURL.createObjectURL(stream);
+        video.srcObject = stream;
+        video.play();
+    }
+
+    function error(error) {
+        console.log(`访问用户媒体设备失败${error.name}, ${error.message}`);
+    }
+
     const vue = new Vue({
         el: '#app',
         data: {
@@ -72,72 +110,26 @@
         methods: {
             getMyOldFace(data) {
                 const that = this;
-                const file = document.getElementById('file').files[0];
                 this.loading = true
                 this.img_path = '';
-                this.photoCompress(file, {
-                    quality: 0.5
-                }, function(base64) {
-                    axios.post('/api/changeface/getmyoldface', {
-                        imgData: base64
-                    }).then(json => {
-                        that.img_path = json.data
-                        that.loading = false
-                    })
+                axios.post('/api/changeface/getmyoldface', {
+                    imgData: canvas.toDataURL( 'image/png', 1)
+                }).then(json => {
+                    that.img_path = json.data
+                    that.loading = false
                 })
-            },
-
-            photoCompress(file, w, objDiv){
-                const that = this;
-                var ready = new FileReader();
-                /*开始读取指定的Blob对象或File对象中的内容. 当读取操作完成时,readyState属性的值会成为DONE,如果设置了onloadend事件处理程序,则调用之.同时,result属性中将包含一个data: URL格式的字符串以表示所读取文件的内容.*/
-                ready.readAsDataURL(file);
-                ready.onload = function() {
-                    var re = this.result;
-                    that.canvasDataURL(re,w,objDiv)
-                }
-            },
-
-            // 上传图片到服务器
-            canvasDataURL(path, obj, callback){
-                var img = new Image();
-                img.src = path;
-                img.onload = function(){
-                    var that = this;
-                    // 默认按比例压缩
-                    var w = that.width,
-                        h = that.height,
-                        scale = w / h;
-                    w = obj.width || w;
-                    h = obj.height || (w / scale);
-                    var quality = 0.7;  // 默认图片质量为0.7
-                    //生成canvas
-                    var canvas = document.createElement('canvas');
-                    var ctx = canvas.getContext('2d');
-                    // 创建属性节点
-                    var anw = document.createAttribute("width");
-                    anw.nodeValue = w;
-                    var anh = document.createAttribute("height");
-                    anh.nodeValue = h;
-                    canvas.setAttributeNode(anw);
-                    canvas.setAttributeNode(anh);
-                    ctx.drawImage(that, 0, 0, w, h);
-                    // 图像质量
-                    if(obj.quality && obj.quality <= 1 && obj.quality > 0){
-                        quality = obj.quality;
-                    }
-                    // quality值越小，所绘制出的图像越模糊
-                    var base64 = canvas.toDataURL('image/jpeg', quality);
-                    // 回调函数返回base64的值
-                    callback(base64);
-                }
-            }
-        },
-        created() {
-            document.getElementById('file').onchange = function(file) {
-                console.log(this);
             }
         }
+    })
+    if (navigator.mediaDevices.getUserMedia || navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia) {
+        //调用用户媒体设备, 访问摄像头
+        getUserMedia({ video: { width: 1920, height: 1080 } }, success, error);
+    } else {
+        alert('不支持访问用户媒体');
+    }
+    document.getElementById('capture').addEventListener('click', function () {
+        context.drawImage(video, 0, 0, 600, 400);
+        console.log(canvas.toDataURL( 'image/png' ), 1);
     })
 </script>
 
