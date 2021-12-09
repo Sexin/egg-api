@@ -13,6 +13,7 @@ class ChangefaceController extends Controller {
     async getMyOldFace() {
         const { ctx } = this;
         const imgData = ctx.request.body.imgData;
+        const age = ctx.request.body.age ? ctx.request.body.age : 80;
         let result;
         try {
             const clientConfig = {
@@ -29,27 +30,25 @@ class ChangefaceController extends Controller {
             };
 
             const client = new FtClient(clientConfig);
+            console.log(age)
             const params = {
                 "Image": imgData,
                 "AgeInfos": [
                     {
-                        "Age": 80
+                        "Age": age
                     }
                 ],
             }
             await client.ChangeAgePic(params).then(
                 (data) => {
-                    console.log(data);
-                    result = data.ResultImage;
+                    result = {result: 0, data: 'data:image/png;base64,' + data.ResultImage};
                 },
                 (err) => {
-                    console.error("error", err);
+                    result = {result: 1, msg: err};
                 }
             );
         } finally {
-            ctx.body = {
-                data: 'data:image/png;base64,' + result
-            };
+            ctx.body = result;
         }
     }
 }
