@@ -55,29 +55,40 @@
                 transform: scale(1);
             }
         }
+        .el-button--danger {
+            background-color: #b33f3f;
+            border-color: #b33f3f;
+        }
     </style>
 </head>
 
 <body>
     <div>
+        <h1 
+            style='position: fixed; top: 0; text-align: center; width: 100%; color: #b33f3f;'
+        >
+            杭州市萧山区禁毒教育馆
+        </h1>
         <video 
             id="video" 
             width="100%" 
             controls 
-            style='max-height: 400px'
         >
         </video>
         <div id='app'>
             <div 
                 v-show='showvideo' 
-                style='text-align: center; width: 80%; margin: 20px auto;'
+                style='text-align: center; width: 100%; margin: 20px auto;'
             >
-                <el-slider 
-                    v-model="value" 
-                    :min='10' 
-                    :max='80' 
-                    :marks="marks" 
-                ></el-slider>
+                <el-button :type='value == 40 ? "danger" : ""' @click='value = 40'>
+                    吸毒3年后
+                </el-button>
+                <el-button :type='value == 60 ? "danger" : ""' @click='value = 60'>
+                    吸毒5年后
+                </el-button>
+                <el-button :type='value == 80 ? "danger" : ""' @click='value = 80'>
+                    吸毒10年后
+                </el-button>
             </div>
             <div 
                 v-show='showvideo' 
@@ -85,8 +96,8 @@
             >
                 <el-button 
                     @click.stop='getMyOldFace' 
-                    type='primary'
-                >拍照</el-button>
+                    type='danger'
+                >一键穿越</el-button>
             </div>
             <canvas 
                 id="canvas" 
@@ -100,6 +111,14 @@
                 v-if='loading && show'
             >
             </div>
+            <el-image 
+                :src="origin_path" 
+                :preview-src-list="[origin_path]" 
+                v-loading='loading'
+                v-if='!show'
+            >
+            </el-image>
+            <h2 v-if='!show' style='color: #4FAEE6; text-align: center; margin: 10px auto;'>现在的你(*^▽^*)</h2>
             <transition name="bounce">
                 <el-image 
                     :src="img_path" 
@@ -109,11 +128,12 @@
                 >
                 </el-image>
             </transition>
+            <h2 v-if='!show' style='color: #b33f3f; text-align: center; margin: 10px auto;'>吸毒<span>{{value == 40 ? '3' : (value == 60 ? '5' : 10)}}</span>年后的你</h2>
             <div 
                 style='text-align: center; width: 80%; margin: 20px auto;' 
                 v-if='!show'
             >
-                <el-button @click.stop='fnRePlay' type='primary'>重新拍照</el-button>
+                <el-button @click.stop='fnRePlay' type='danger'>再来一次</el-button>
             </div>
         </div>
     </div>
@@ -162,8 +182,9 @@
         el: '#app',
         data: {
             img_path: '',
+            origin_path: '',
             loading: false,
-            value: 50,
+            value: 40,
             marks: {
                 10: '少年',
                 20: '青年',
@@ -182,10 +203,11 @@
                 this.loading = true
                 this.img_path = '';
                 this.showvideo = false
+                this.origin_path = canvas.toDataURL('image/png', 1)
                 document.getElementById('video').style.display = 'none';
                 that.$message.success('照片转换中，请稍等~');
                 axios.post('/api/changeface/getmyoldface', {
-                    imgData: canvas.toDataURL('image/png', 1),
+                    imgData: this.origin_path,
                     age: this.value
                 }).then(json => {
                     if (json.result == 0) {

@@ -1,12 +1,7 @@
 'use strict';
 
 const Controller = require('egg').Controller;
-const fs = require('fs');
-const path = require('path');
-const { getFiles } = require('../utils/getFiles');
-const { createUUID } = require('../utils/common');
 const tencentcloud = require("tencentcloud-sdk-nodejs");
-
 const FtClient = tencentcloud.ft.v20200304.Client;
 
 class ChangefaceController extends Controller {
@@ -30,7 +25,6 @@ class ChangefaceController extends Controller {
             };
 
             const client = new FtClient(clientConfig);
-            console.log(age)
             const params = {
                 "Image": imgData,
                 "AgeInfos": [
