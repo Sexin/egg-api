@@ -118,7 +118,10 @@
                 v-if='!show'
             >
             </el-image>
-            <h2 v-if='!show' style='color: #4FAEE6; text-align: center; margin: 10px auto;'>现在的你(*^▽^*)</h2>
+            <h2 
+                v-if='!show' 
+                style='color: #4FAEE6; text-align: center; margin: 10px auto;'
+            >现在的你(*^▽^*)</h2>
             <transition name="bounce">
                 <el-image 
                     :src="img_path" 
@@ -128,7 +131,12 @@
                 >
                 </el-image>
             </transition>
-            <h2 v-if='!show' style='color: #b33f3f; text-align: center; margin: 10px auto;'>吸毒<span>{{value == 40 ? '3' : (value == 60 ? '5' : 10)}}</span>年后的你</h2>
+            <h2 
+                v-if='!show' 
+                style='color: #b33f3f; text-align: center; margin: 10px auto;'
+            >
+                吸毒<span>{{value == 40 ? '3' : (value == 60 ? '5' : 10)}}</span>年后的你(⊙︿⊙)
+            </h2>
             <div 
                 style='text-align: center; width: 80%; margin: 20px auto;' 
                 v-if='!show'
