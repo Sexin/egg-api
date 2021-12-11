@@ -63,7 +63,7 @@
 </head>
 
 <body>
-    <div>
+    <div style='width: 90%'>
         <h1 
             style='position: fixed; top: 0; left: 0; text-align: center; width: 100%; color: #b33f3f;'
         >
@@ -75,7 +75,7 @@
             controls 
         >
         </video>
-        <div id='app'>
+        <div id='app' style='width: 100%'>
             <div 
                 v-show='showvideo' 
                 style='text-align: center; width: 100%; margin: 20px auto;'
@@ -112,6 +112,7 @@
             >
             </div>
             <el-image 
+		style='width: 100%'
                 :src="origin_path" 
                 :preview-src-list="[origin_path]" 
                 v-loading='loading'
@@ -123,7 +124,8 @@
                 style='color: #4FAEE6; text-align: center; margin: 10px auto;'
             >现在的你(*^▽^*)</h2>
             <transition name="bounce">
-                <el-image 
+                <el-image
+			style='width: 100%'
                     :src="img_path" 
                     :preview-src-list="[img_path]" 
                     v-loading='loading'
